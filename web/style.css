@@ -3948,48 +3948,39 @@ body.file-tree-anim #fileTreeResizer { transition: flex-basis 0.22s ease; }
   border-bottom: 1px solid var(--crit-border);
   flex-shrink: 0;
 }
-.file-tree-title {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--crit-editor-fg-muted);
-}
 .file-tree-stats {
   font-size: 11px;
   color: var(--crit-editor-fg-muted);
-  font-family: var(--crit-font-mono);
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
-  column-gap: 6px;
-  row-gap: 2px;
+  column-gap: 8px;
+  row-gap: 4px;
 }
-.file-tree-stats .tree-stat-group { display: flex; align-items: baseline; gap: 4px; white-space: nowrap; }
-.file-tree-stats .tree-stat-group + .tree-stat-group,
-.file-tree-stats .tree-stat-group + .tree-stat-count {
+.file-tree-stats .tree-stat-group { display: flex; align-items: baseline; gap: 5px; white-space: nowrap; }
+.file-tree-stats .tree-stat-group + .tree-stat-group {
   border-left: 1px solid var(--crit-border-strong);
   padding-left: 8px;
-  margin-left: 2px;
 }
-.file-tree-stats .tree-stat-label { opacity: 0.7; }
-.file-tree-stats .tree-stat-count { white-space: nowrap; }
-/* A narrow sidebar cannot fit everything on one line: code takes the first
-   line on its own, rest and the file count share the second. */
-.file-tree-header { container-type: inline-size; }
-@container (max-width: 400px) {
-  .file-tree-stats .tree-stat-group--code {
-    flex-basis: 100%;
-    justify-content: flex-end;
-  }
-  .file-tree-stats .tree-stat-group + .tree-stat-group--rest {
-    border-left: none;
-    padding-left: 0;
-    margin-left: 0;
-  }
+.file-tree-stats .tree-stat-label {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
+.file-tree-stats .tree-stat-num,
+.file-tree-stats .tree-stat-add,
+.file-tree-stats .tree-stat-del { font-family: var(--crit-font-mono); }
 .file-tree-stats .tree-stat-add { color: var(--crit-green); }
 .file-tree-stats .tree-stat-del { color: var(--crit-red); }
+/* A narrow sidebar cannot fit every group on one line: code takes the first
+   line on its own, the rest share the second. */
+.file-tree-header { container-type: inline-size; }
+@container (max-width: 400px) {
+  .file-tree-stats .tree-stat-group--code { flex-basis: 100%; }
+  .file-tree-stats .tree-stat-group--code + .tree-stat-group {
+    border-left: none;
+    padding-left: 0;
+  }
+}
 
 .file-tree-collapse-btn {
   background: none;

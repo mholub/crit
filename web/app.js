@@ -1508,18 +1508,15 @@
       }
     }
     // Ordered by what matters when reviewing: code lines, other lines, files.
+    // A line group without changes is left out; the file count always shows.
     const statsEl = document.getElementById('fileTreeStats');
-    let statsHtml = '';
-    if (restAdd || restDel) {
-      statsHtml = treeStatGroup('code', codeAdd, codeDel) + treeStatGroup('rest', restAdd, restDel);
-    } else if (codeAdd || codeDel) {
-      statsHtml = '<span class="tree-stat-group">' +
-        (codeAdd ? '<span class="tree-stat-add">+' + codeAdd + '</span>' : '') +
-        (codeDel ? '<span class="tree-stat-del">-' + codeDel + '</span>' : '') +
-        '</span>';
-    }
-    statsEl.innerHTML = statsHtml +
-      '<span class="tree-stat-count">' + files.length + (files.length === 1 ? ' file' : ' files') + '</span>';
+    statsEl.innerHTML =
+      (codeAdd || codeDel ? treeStatGroup('code', codeAdd, codeDel) : '') +
+      (restAdd || restDel ? treeStatGroup('rest', restAdd, restDel) : '') +
+      '<span class="tree-stat-group tree-stat-group--files">' +
+        '<span class="tree-stat-num">' + files.length + '</span>' +
+        '<span class="tree-stat-label">' + (files.length === 1 ? 'file' : 'files') + '</span>' +
+      '</span>';
 
     // Collapse/expand all button
     const existingBtn = document.querySelector('.file-tree-collapse-btn');
