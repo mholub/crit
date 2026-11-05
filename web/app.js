@@ -1510,7 +1510,7 @@
     const statsEl = document.getElementById('fileTreeStats');
     if (restAdd || restDel) {
       statsEl.innerHTML =
-        '<span>' + files.length + '</span>' +
+        '<span class="tree-stat-count">' + files.length + '</span>' +
         treeStatGroup('code', codeAdd, codeDel) +
         treeStatGroup('rest', restAdd, restDel);
     } else {
