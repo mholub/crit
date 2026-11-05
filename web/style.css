@@ -3949,6 +3949,7 @@ body.file-tree-anim #fileTreeResizer { transition: flex-basis 0.22s ease; }
   flex-shrink: 0;
 }
 .file-tree-stats {
+  flex: 1;
   font-size: 11px;
   color: var(--crit-editor-fg-muted);
   display: flex;
@@ -3960,6 +3961,13 @@ body.file-tree-anim #fileTreeResizer { transition: flex-basis 0.22s ease; }
 .file-tree-stats .tree-stat-group + .tree-stat-group {
   border-left: 1px solid var(--crit-border-strong);
   padding-left: 8px;
+}
+/* Line counts on the left, file count on the right next to the collapse button. */
+.file-tree-stats .tree-stat-group--files,
+.file-tree-stats .tree-stat-group + .tree-stat-group--files {
+  margin-left: auto;
+  border-left: none;
+  padding-left: 0;
 }
 .file-tree-stats .tree-stat-label {
   font-weight: 600;
