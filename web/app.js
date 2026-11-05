@@ -1507,18 +1507,19 @@
         restAdd += files[i].additions; restDel += files[i].deletions;
       }
     }
+    // Ordered by what matters when reviewing: code lines, other lines, files.
     const statsEl = document.getElementById('fileTreeStats');
+    let statsHtml = '';
     if (restAdd || restDel) {
-      statsEl.innerHTML =
-        '<span class="tree-stat-count">' + files.length + '</span>' +
-        treeStatGroup('code', codeAdd, codeDel) +
-        treeStatGroup('rest', restAdd, restDel);
-    } else {
-      statsEl.innerHTML =
-        '<span>' + files.length + '</span>' +
-        (codeAdd ? ' <span class="tree-stat-add">+' + codeAdd + '</span>' : '') +
-        (codeDel ? ' <span class="tree-stat-del">-' + codeDel + '</span>' : '');
+      statsHtml = treeStatGroup('code', codeAdd, codeDel) + treeStatGroup('rest', restAdd, restDel);
+    } else if (codeAdd || codeDel) {
+      statsHtml = '<span class="tree-stat-group">' +
+        (codeAdd ? '<span class="tree-stat-add">+' + codeAdd + '</span>' : '') +
+        (codeDel ? '<span class="tree-stat-del">-' + codeDel + '</span>' : '') +
+        '</span>';
     }
+    statsEl.innerHTML = statsHtml +
+      '<span class="tree-stat-count">' + files.length + (files.length === 1 ? ' file' : ' files') + '</span>';
 
     // Collapse/expand all button
     const existingBtn = document.querySelector('.file-tree-collapse-btn');

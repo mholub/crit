@@ -3967,21 +3967,22 @@ body.file-tree-anim #fileTreeResizer { transition: flex-basis 0.22s ease; }
 }
 .file-tree-stats .tree-stat-group { display: flex; align-items: baseline; gap: 4px; white-space: nowrap; }
 .file-tree-stats .tree-stat-group + .tree-stat-group,
-.file-tree-stats .tree-stat-count + .tree-stat-group {
+.file-tree-stats .tree-stat-group + .tree-stat-count {
   border-left: 1px solid var(--crit-border-strong);
   padding-left: 8px;
   margin-left: 2px;
 }
 .file-tree-stats .tree-stat-label { opacity: 0.7; }
-/* Code is what gets reviewed; asset and data churn stays readable but quiet. */
-.file-tree-stats .tree-stat-group--rest { opacity: 0.55; }
-/* A narrow sidebar cannot fit both groups on one line: put rest on its own
-   line instead of letting it wrap with a dangling divider. */
+.file-tree-stats .tree-stat-count { white-space: nowrap; }
+/* A narrow sidebar cannot fit everything on one line: code takes the first
+   line on its own, rest and the file count share the second. */
 .file-tree-header { container-type: inline-size; }
 @container (max-width: 400px) {
-  .file-tree-stats .tree-stat-group + .tree-stat-group--rest {
+  .file-tree-stats .tree-stat-group--code {
     flex-basis: 100%;
     justify-content: flex-end;
+  }
+  .file-tree-stats .tree-stat-group + .tree-stat-group--rest {
     border-left: none;
     padding-left: 0;
     margin-left: 0;
