@@ -27,6 +27,13 @@ If no arguments, check conversation context:
 1. A plan file was written earlier in this conversation → `crit <plan-file>`
 2. Otherwise → bare `crit` (branch diff)
 
+<important if="reviewing code changes in a git repository">
+- Code review goes through bare `crit` (working tree, or branch against its merge-base). Later rounds reattach to the same session; crit re-resolves the diff base each round, so commits, pulls and rebases between rounds stay correct without a restart.
+- File arguments are for documents (plans, Markdown, HTML). A code file path opens file mode, which shows no real diff.
+- `--range <base>..<head>` is for commits that will not be amended; the range stays pinned.
+- When a reattached review still holds threads from a different task, ask the user, then clear them once with `crit comment --clear`.
+</important>
+
 <important if="the user wants to open the review from another device — e.g. a phone over Tailscale">
 Keep crit on loopback and reverse-proxy in. Same Step 1 args still apply (file, bare `crit`, etc.):
 
