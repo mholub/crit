@@ -29,8 +29,15 @@ test.describe('File Tree — Git Mode', () => {
     const stats = page.locator('#fileTreeStats');
     await expect(stats).toBeVisible();
     await expect(stats).toContainText('10');
-    await expect(page.locator('#fileTreeStats .tree-stat-add')).toHaveText(/\+\d+/);
-    await expect(page.locator('#fileTreeStats .tree-stat-del')).toHaveText(/-\d+/);
+    // Code (.go, .js) and rest (.md, .txt, .feature, .yaml) are summed separately.
+    const code = stats.locator('.tree-stat-group--code');
+    const rest = stats.locator('.tree-stat-group--rest');
+    await expect(code.locator('.tree-stat-label')).toHaveText('code');
+    await expect(code.locator('.tree-stat-add')).toHaveText(/^\+[1-9]\d*$/);
+    await expect(code.locator('.tree-stat-del')).toHaveText(/^-[1-9]\d*$/);
+    await expect(rest.locator('.tree-stat-label')).toHaveText('rest');
+    await expect(rest.locator('.tree-stat-add')).toHaveText(/^\+[1-9]\d*$/);
+    await expect(rest.locator('.tree-stat-del')).toHaveText(/^-\d+$/);
 
     // plan.md, skill.md, handler.js, login.feature, and config.yaml (untracked) are added
     await expect(page.locator('.tree-file-status-icon.added')).toHaveCount(5);

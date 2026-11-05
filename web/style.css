@@ -3944,6 +3944,7 @@ body.file-tree-anim #fileTreeResizer { transition: flex-basis 0.22s ease; }
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   border-bottom: 1px solid var(--crit-border);
   flex-shrink: 0;
 }
@@ -3959,8 +3960,13 @@ body.file-tree-anim #fileTreeResizer { transition: flex-basis 0.22s ease; }
   color: var(--crit-editor-fg-muted);
   font-family: var(--crit-font-mono);
   display: flex;
-  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  column-gap: 6px;
+  row-gap: 2px;
 }
+.file-tree-stats .tree-stat-group { display: flex; gap: 4px; white-space: nowrap; }
+.file-tree-stats .tree-stat-label { text-transform: uppercase; letter-spacing: 0.06em; }
 .file-tree-stats .tree-stat-add { color: var(--crit-green); }
 .file-tree-stats .tree-stat-del { color: var(--crit-red); }
 

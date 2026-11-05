@@ -1456,6 +1456,35 @@
     return result;
   }
 
+  // Extensions counted as "code" in the file tree header stats. Anything not
+  // listed (markdown, json, yaml, images, engine assets) counts as "rest".
+  const SOURCE_CODE_EXTENSIONS = new Set([
+    'c', 'cc', 'cpp', 'cxx', 'h', 'hh', 'hpp', 'hxx', 'inl', 'ipp', 'm', 'mm',
+    'cs', 'java', 'kt', 'kts', 'swift', 'go', 'rs', 'zig', 'odin', 'jai',
+    'js', 'mjs', 'cjs', 'jsx', 'ts', 'mts', 'cts', 'tsx', 'vue', 'svelte',
+    'py', 'rb', 'php', 'lua', 'pl', 'ex', 'exs', 'erl', 'hs', 'ml', 'clj',
+    'scala', 'dart', 'r', 'jl', 'nim', 'sql',
+    'sh', 'bash', 'zsh', 'fish', 'ps1', 'bat', 'cmake',
+    'shader', 'hlsl', 'glsl', 'vert', 'frag', 'comp', 'metal', 'wgsl', 'cginc', 'usf', 'ush',
+    'css', 'scss', 'sass', 'less', 'html', 'htm',
+  ]);
+  const SOURCE_CODE_BASENAMES = new Set(['makefile', 'justfile', 'dockerfile', 'cmakelists.txt']);
+
+  function isSourceCodePath(path) {
+    const base = path.slice(path.lastIndexOf('/') + 1).toLowerCase();
+    if (SOURCE_CODE_BASENAMES.has(base)) return true;
+    const dot = base.lastIndexOf('.');
+    return dot > 0 && SOURCE_CODE_EXTENSIONS.has(base.slice(dot + 1));
+  }
+
+  function treeStatGroup(label, add, del) {
+    return '<span class="tree-stat-group tree-stat-group--' + label + '">' +
+      '<span class="tree-stat-label">' + label + '</span>' +
+      '<span class="tree-stat-add">+' + add + '</span>' +
+      '<span class="tree-stat-del">-' + del + '</span>' +
+      '</span>';
+  }
+
   function renderFileTree() {
     const panel = document.getElementById('fileTreePanel');
     if (files.length <= 1 && session.mode !== 'git') {
@@ -1467,14 +1496,29 @@
     panel.style.display = '';
     syncSidebarToggleVisibility();
 
-    // Stats
-    let totalAdd = 0, totalDel = 0;
-    for (let i = 0; i < files.length; i++) { totalAdd += files[i].additions; totalDel += files[i].deletions; }
+    // Stats. Source files and everything else (assets, data, docs) are summed
+    // separately: a few hundred lines of code otherwise vanish under thousands
+    // of lines of scene or prefab churn.
+    let codeAdd = 0, codeDel = 0, restAdd = 0, restDel = 0;
+    for (let i = 0; i < files.length; i++) {
+      if (isSourceCodePath(files[i].path)) {
+        codeAdd += files[i].additions; codeDel += files[i].deletions;
+      } else {
+        restAdd += files[i].additions; restDel += files[i].deletions;
+      }
+    }
     const statsEl = document.getElementById('fileTreeStats');
-    statsEl.innerHTML =
-      '<span>' + files.length + '</span>' +
-      (totalAdd ? ' <span class="tree-stat-add">+' + totalAdd + '</span>' : '') +
-      (totalDel ? ' <span class="tree-stat-del">-' + totalDel + '</span>' : '');
+    if (restAdd || restDel) {
+      statsEl.innerHTML =
+        '<span>' + files.length + '</span>' +
+        treeStatGroup('code', codeAdd, codeDel) +
+        treeStatGroup('rest', restAdd, restDel);
+    } else {
+      statsEl.innerHTML =
+        '<span>' + files.length + '</span>' +
+        (codeAdd ? ' <span class="tree-stat-add">+' + codeAdd + '</span>' : '') +
+        (codeDel ? ' <span class="tree-stat-del">-' + codeDel + '</span>' : '');
+    }
 
     // Collapse/expand all button
     const existingBtn = document.querySelector('.file-tree-collapse-btn');
