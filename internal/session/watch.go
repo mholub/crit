@@ -98,7 +98,18 @@ func (s *Session) RefreshFileList() {
 	s.mu.RLock()
 	baseRef := s.BaseRef
 	repoRoot := s.RepoRoot
+	branch := s.Branch
 	s.mu.RUnlock()
+
+	if fresh := refreshSessionBaseRef(vc, branch, baseRef, repoRoot); fresh != baseRef {
+		s.mu.Lock()
+		s.BaseRef = fresh
+		if s.Focus.Kind == FocusWorkingTree {
+			s.Focus.BaseRef = fresh
+		}
+		s.mu.Unlock()
+		baseRef = fresh
+	}
 
 	var changes []vcs.FileChange
 	var err error

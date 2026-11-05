@@ -836,6 +836,57 @@ func resolveSessionStartBaseRef(v vcs.VCS, branch, resolvedBase, baseRef, repoRo
 	return sha, nil
 }
 
+// refreshSessionBaseRef re-resolves the working-tree diff base on refresh, so a
+// pull or rebase between rounds does not leave the review on a stale range
+// (foreign commits in the file list, or a base that is no longer in history).
+//
+// Feature branch: the current merge-base with the default base ref.
+// Default branch: keep the session-start SHA while it is an ancestor of HEAD
+// and the upstream merge-base has not moved past it; otherwise use
+// merge-base(HEAD, upstream), i.e. unpushed commits plus the working tree.
+// Without a remote-tracking ref there is no upstream to compare against, so a
+// rewritten start SHA falls back to HEAD.
+func refreshSessionBaseRef(v vcs.VCS, branch, current, repoRoot string) string {
+	if _, ok := v.(*vcs.GitVCS); !ok {
+		return current
+	}
+	upstream := v.DefaultBaseRef()
+	if branch != v.DefaultBranch() {
+		if mb, err := v.MergeBaseOf("HEAD", upstream, repoRoot); err == nil && mb != "" {
+			return mb
+		}
+		return current
+	}
+	if current == "" {
+		return current
+	}
+	hasUpstream := upstream != branch
+	if gitIsAncestor(current, "HEAD", repoRoot) {
+		if !hasUpstream {
+			return current
+		}
+		mb, err := v.MergeBaseOf("HEAD", upstream, repoRoot)
+		if err != nil || mb == "" || mb == current || !gitIsAncestor(current, mb, repoRoot) {
+			return current
+		}
+		return mb
+	}
+	if hasUpstream {
+		if mb, err := v.MergeBaseOf("HEAD", upstream, repoRoot); err == nil && mb != "" {
+			return mb
+		}
+	}
+	if head, err := vcs.HeadSHAInDir(repoRoot); err == nil {
+		return head
+	}
+	return current
+}
+
+func gitIsAncestor(ancestor, descendant, repoRoot string) bool {
+	_, err := vcs.RunGitInDir(repoRoot, "merge-base", "--is-ancestor", ancestor, descendant)
+	return err == nil
+}
+
 // changedFilesForSession returns changed files for git-mode refresh. When
 // BaseRef is set (feature-branch merge-base or default-branch session start),
 // diffs from that ref to the working tree; otherwise falls back to working-tree-only.
